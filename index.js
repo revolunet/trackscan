@@ -20,6 +20,16 @@ const trackers = [
     message: "Use hosted Matomo instance",
   },
   {
+    id: "google analytics",
+    check: (url) => url.match(/www\.google-analytics\.com/),
+    message: "Use hosted Matomo instance",
+  },
+  {
+    id: "google",
+    check: (url) => url.match(/google\.com/) || url.match(/gstatic\.com/),
+    message: "Use hosted Matomo instance",
+  },
+  {
     id: "xiti",
     check: (url) => url.match(/logs\d*\.xiti\.com/),
     message: "Use hosted Matomo instance",
@@ -49,19 +59,26 @@ const trackers = [
     check: (url) => url.match(/polyfill\.io/),
     message: "Bundle your polyfills and host locally",
   },
+  {
+    id: "amplitude.com",
+    check: (url) => url.match(/amplitude\.com/),
+    message: "Use hosted Matomo instance",
+  },
+  {
+    id: "faktor.io",
+    check: (url) => url.match(/faktor\.io/),
+    message: "Use hosted Matomo instance",
+  },
 ];
 
 const hostname = (url) => url.replace(/^https?:\/\/([^/]+)\/?.*/, "$1");
 
 const checkUrl = (requestUrl) => {
-  const matches = trackers
-    .filter((tracker) => tracker.check(requestUrl))
-    .map((tracker) => `${tracker.id}: "${requestUrl}" : ${tracker.message}`);
-
-  if (matches.length) {
-    console.log(matches.join("\n"));
+  const match = trackers.find((tracker) => tracker.check(requestUrl));
+  if (match) {
+    return `${match.id}: "${requestUrl}" : ${match.message}`;
   } else {
-    console.log("Unknown source:", requestUrl);
+    return "Unknown source: " + requestUrl;
   }
 };
 
@@ -69,18 +86,28 @@ const testUrl = (url) => {
   puppeteer.launch().then(async (browser) => {
     const page = await browser.newPage();
     await page.setRequestInterception(true);
+    const results = [];
     page.on("request", (interceptedRequest) => {
       const requestUrl = interceptedRequest.url();
-      if (hostname(url) !== hostname(requestUrl)) {
-        checkUrl(requestUrl);
+      if (
+        !requestUrl.match(/^data:/) &&
+        hostname(url) !== hostname(requestUrl)
+      ) {
+        results.push(checkUrl(requestUrl));
       }
       interceptedRequest.continue();
     });
-    await page.goto(url);
+    const response = await page.goto(url);
+    const headers = response.headers();
+    console.log("response headers", headers);
+    const cookies = await page.cookies();
+    console.log("cookies", cookies);
+    console.log(results.join("\n"));
     await browser.close();
   });
 };
 
-testUrl(
-  "https://www.prefecturedepolice.interieur.gouv.fr/Demarches/Particulier/Documents-d-identite-et-de-voyage/Carte-nationale-d-identite-Passeport"
-);
+if (require.main === module) {
+  // "https://www.liberation.fr"
+  testUrl(process.argv[2]);
+}

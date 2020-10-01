@@ -13,8 +13,16 @@ const isTracker = (requestUrl) => {
 
 const isGouvFr = (url) =>
   hostname(url).match(/\.gouv\.fr/i) ||
-  hostname(url).match(/gouvernement\.fr/i) ||
-  hostname(url).match(/aphp\.fr/i);
+  hostname(url).match(/gouvernement\.fr/i);
+
+const isLegit = (url) =>
+  url.match(/\.aphp\.fr/i) ||
+  url.match(/\.cci\.fr/i) ||
+  url.match(/\.openstreetmap\.org/i) ||
+  url.match(/\.ameli\.fr/i) ||
+  url.match(/\.sante\.fr/i) ||
+  url.match(/\.caf\.fr/i) ||
+  url.match(/\.cnrs\.fr/i);
 
 const isSameHost = (url1, url2) => hostname(url1) === hostname(url2);
 
@@ -30,7 +38,8 @@ const analyseUrl = async (browser, url) => {
     if (
       !requestUrl.match(/^data:/) &&
       !isSameHost(url, requestUrl) &&
-      !isGouvFr(requestUrl)
+      !isGouvFr(requestUrl) &&
+      !isLegit(requestUrl)
     ) {
       const res = isTracker(requestUrl);
       if (res) {

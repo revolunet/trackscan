@@ -50,7 +50,12 @@ const trackers = [
   },
   {
     id: "cloudflare",
-    check: (url) => url.match(/cdnjs\.cloudflare\.com/i),
+    check: (url) => url.match(/\.cloudflare\.com/i),
+    message: "Host files locally",
+  },
+  {
+    id: "cloudfront",
+    check: (url) => url.match(/\.cloudfront\.net/i),
     message: "Host files locally",
   },
   {

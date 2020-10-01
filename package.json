@@ -1,9 +1,16 @@
 {
   "name": "trackscan",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "puppeteer": "^5.2.0"
+    "p-all": "^3.0.0",
+    "puppeteer": "^5.2.0",
+    "sqlite": "^4.0.15",
+    "sqlite3": "^5.0.0"
+  },
+  "scripts": {
+    "scan": "node index"
   }
 }

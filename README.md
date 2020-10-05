@@ -12,6 +12,8 @@ Les données sont exportées vers une base SQLite pour analyse avec [SQLiteStudi
 
 La base SQLite générée est dispo ici : [./db.sqlite](./db.sqlite)
 
+Un dump CSV est également dispo : [./dump.csv](./dump.csv)
+
 Pour lancer un nouveau scan : `yarn scan`
 
 ## exploitation avec Metabase

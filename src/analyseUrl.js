@@ -1,5 +1,8 @@
 const trackers = require("./trackers");
 
+// in seconds
+const TIMEOUT = 20;
+
 const hostname = (url) =>
   url.replace(/^(?:https?:\/\/)?(?:www\d*\.)?([^/]+)\/?.*/i, "$1");
 
@@ -43,9 +46,10 @@ const analyseUrl = async (browser, url) => {
     ) {
       const res = isTracker(requestUrl);
       if (res) {
+        // dont record unknown trackers
         // dont warn multiple times for the same tracker
         if (
-          res.type === "unknown" ||
+          res.type !== "unknown" &&
           !trackers.find((t) => t.type === res.type)
         ) {
           trackers.push(res);
@@ -57,7 +61,7 @@ const analyseUrl = async (browser, url) => {
   try {
     const response = await page.goto(realUrl, {
       waitUntil: "load",
-      timeout: 5 * 1000,
+      timeout: TIMEOUT * 1000,
     });
     const headers = response.headers();
     const cookies = await page.cookies();

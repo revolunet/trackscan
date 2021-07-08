@@ -4,7 +4,14 @@ Analyse des trackers présents sur la page d'accueil des [sites des organismes p
 
 ![](./screenshot.png)
 
-## how it works
+## Update 2021
+
+Ce projet a évolué vers de nouveaux outils : 
+
+ - [DashLord](https://github.com/SocialGouv/dashlord) : tableau de bord des trackers, cookies et bonnes pratiques techniques
+ - [thirdparties](https://github.com/SocialGouv/thirdparties): liste des trackers et remédiations
+
+## How it works
 
 Ce script ouvre des pages web et vérifie les requêtes vers des domaines externes avec [puppeteer](https://github.com/puppeteer/puppeteer).
 

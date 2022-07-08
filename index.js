@@ -52,11 +52,12 @@ const startScan = async () => {
         } else {
           await db.run(`UPDATE urls set valid=TRUE where url=?;`, [url]);
           return pAll(
-            trackers.map((track) => () =>
-              db.run(
-                `INSERT INTO trackers (url, type, value) VALUES(?, ?, ?);`,
-                [url, track.type, track.value]
-              )
+            trackers.map(
+              (track) => () =>
+                db.run(
+                  `INSERT INTO trackers (url, type, value) VALUES(?, ?, ?);`,
+                  [url, track.type, track.value]
+                )
             ),
             { concurrency: 1, stopOnError: false }
           );
@@ -65,9 +66,8 @@ const startScan = async () => {
       { concurrency: 5, stopOnError: false }
     );
     browser.close();
+    db.close();
   });
-
-  db.close();
 };
 
 if (require.main === module) {

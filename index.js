@@ -26,7 +26,7 @@ const startScan = async () => {
   return puppeteer.launch().then(async (browser) => {
     await pAll(
       hosts.map((url) => async () => {
-        console.log("url", url);
+        console.log("url", `https://${url}`);
 
         const exist = await db.get(
           "select count(url) as count from urls where url = ?",
@@ -45,8 +45,15 @@ const startScan = async () => {
 
         await db.run("DELETE from trackers where URL = ?", [url]);
 
-        const { trackers, cookies } = await analyseUrl(browser, url);
-
+        let trackers, cookies;
+        try {
+          let result = await analyseUrl(browser, url);
+          trackers = result.trackers;
+        } catch (e) {
+          console.log("err", e);
+          await db.run("DELETE from urls where URL = ?", [url]);
+          return Promise.resolve();
+        }
         if (!trackers) {
           return Promise.resolve();
         } else {
@@ -59,11 +66,11 @@ const startScan = async () => {
                   [url, track.type, track.value]
                 )
             ),
-            { concurrency: 1, stopOnError: false }
+            { concurrency: 1, stopOnError: true }
           );
         }
       }),
-      { concurrency: 5, stopOnError: false }
+      { concurrency: 5, stopOnError: true }
     );
     browser.close();
     db.close();
